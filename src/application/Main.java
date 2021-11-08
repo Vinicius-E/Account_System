@@ -4,60 +4,93 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import entities.Account;
+import exceptions.DomainException;
 
 public class Main {
 
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.US);
 
-		Account defaultAcc = new Account();
-		Account newAcc = new Account();
-		Boolean c = true;
+		try {
+			Account defaultAcc = new Account();
+			Account newAcc = new Account();
+			Boolean c = true;
 
-		while (c == true) {
-			Account auxAccount = newAcc;
-			switch (introSystem()) {
-			case 1: {
-				newAcc = defaultAcc.openAcc();
-				break;
+			while (c == true) {
+				Account auxAccount = newAcc;
+				switch (introSystem()) {
+				case 1: {
+					try {
+						newAcc = defaultAcc.openAcc();
+					} catch (DomainException e) {
+						System.out.println("Open Account error: " + e.getMessage());
+					}
+					break;
+				}
+				case 2: {
+					try {
+						auxAccount.closeAcc(newAcc);
+						newAcc = auxAccount;
+					} catch (DomainException e) {
+						System.out.println("Close Account error: " + e.getMessage());
+					}
+					break;
+				}
+				case 3: {
+					System.out.println("Your Current Balance is: $ " + String.format("%.2f", newAcc.getBalance()));
+					break;
+				}
+				case 4: {
+					try {
+						newAcc.withdraw();
+					} catch (DomainException e) {
+						System.out.println("Withdraw Account error: " + e.getMessage());
+					}
+					break;
+				}
+				case 5: {
+					try {
+						newAcc.deposit();
+					} catch (DomainException e) {
+						System.out.println("Deposit Account error: " + e.getMessage());
+					}
+					break;
+				}
+				case 6: {
+					try {
+						newAcc.changeWithdrawLimit();
+					} catch (DomainException e) {
+						System.out.println("Change the Withdraw Limit Account error: " + e.getMessage());
+					}
+					break;
+				}
+				case 7: {
+					try {
+						newAcc.showInfo();
+					} catch (DomainException e) {
+						System.out.println("Show Info of Account error: " + e.getMessage());
+					} 
+					break;
+				}
+				default:
+					System.out.println("Option Choosen is Invalid!");
+					throw new IllegalArgumentException("Unexpected value: " + introSystem());
+				}
+
+				if (continueSystem(c) == false) {
+					break;
+				}
 			}
-			case 2: {
-				auxAccount.closeAcc(newAcc);
-				newAcc = auxAccount;
-				break;
-			}
-			case 3: {
-				System.out.println("Your Current Balance is: $ " + String.format("%.2f", newAcc.getBalance()));
-				break;
-			}
-			case 4: {
-				newAcc.withdraw();
-				break;
-			}
-			case 5: {
-				newAcc.deposit();
-				break;
-			}
-			case 6: {
-				newAcc.changeWithdrawLimit();
-				break;
-			}
-			case 7: {
-				newAcc.showInfo();
-				break;
-			}
-			default:
-				System.out.println("Opção escolhida inválida!");
-				throw new IllegalArgumentException("Unexpected value: " + introSystem());
-			}
-			
-			if (continueSystem(c) == false) {
-				break;
+			System.out.println("<<<<< ACCOUNT SYSTEM THANKS YOUR INTERACTION >>>>>");
+
+		} catch (Exception e) {
+			System.out.println("Unexpected Error in Default Try: " + e.getMessage());
+		} 
+		finally {
+			if (sc != null) {
+				sc.close();
 			}
 		}
-		System.out.println("<<<<< ACCOUNT SYSTEM THANKS YOUR INTERACTION >>>>>");
-		sc.close();
-		System.out.println();
 	}
 
 	public static Scanner sc = new Scanner(System.in);
@@ -72,7 +105,7 @@ public class Main {
 		System.out.println("<< (5) - Deposit >>");
 		System.out.println("<< (6) - Change Withdraw Limit >>");
 		System.out.println("<< (7) - Show Info >>");
-		System.out.print("<<< Digit a Number to Choose the Option: (1/2/3/4/5/6/7) ");
+		System.out.print("Digit a Number to Choose the Option: (1/2/3/4/5/6/7) ");
 		Integer opt = sc.nextInt();
 		sc.nextLine();
 
